@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<script src="https://cdn.tiny.cloud/1/2c646ifr40hywrvj32dwwml8e5qmxxr52qvzmjjq7ixbrjby/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- <script src="https://cdn.tiny.cloud/1/2c646ifr40hywrvj32dwwml8e5qmxxr52qvzmjjq7ixbrjby/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script> -->
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
@@ -20,19 +20,19 @@ $row_content = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['save'])) {
     $content = $_POST['content'];
-    $img = $_FILES['img'];
+    // $img = $_FILES['img'];
 
-    $allow = array('jpg', 'jpeg', 'png', 'webp');
-    $extention1 = explode(".", $img['name']); //เเยกชื่อกับนามสกุลไฟล์
-    $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
-    $fileNew1 = rand() . "." . "webp";
-    $filePath1 = "upload/upload_content/" . $fileNew1;
+    // $allow = array('jpg', 'jpeg', 'png', 'webp');
+    // $extention1 = explode(".", $img['name']); //เเยกชื่อกับนามสกุลไฟล์
+    // $fileActExt1 = strtolower(end($extention1)); //แปลงนามสกุลไฟล์เป็นพิมพ์เล็ก
+    // $fileNew1 = rand() . "." . "webp";
+    // $filePath1 = "upload/upload_content/" . $fileNew1;
 
-    if (in_array($fileActExt1, $allow)) {
-        if ($img['size'] > 0 && $img['error'] == 0) {
-            if (move_uploaded_file($img['tmp_name'], $filePath1)) {
-                $con1 = $conn->prepare("UPDATE content SET img = :img, content = :content");
-                $con1->bindParam(":img", $fileNew1);
+    // if (in_array($fileActExt1, $allow)) {
+    //     if ($img['size'] > 0 && $img['error'] == 0) {
+    //         if (move_uploaded_file($img['tmp_name'], $filePath1)) {
+                $con1 = $conn->prepare("UPDATE content SET  content = :content");
+                // $con1->bindParam(":img", $fileNew1);
                 $con1->bindParam(":content", $content);
                 $con1->execute();
 
@@ -62,57 +62,10 @@ if (isset($_POST['save'])) {
                     echo "<meta http-equiv='refresh' content='2;url=index'>";
                 }
             }
-        }
-    } else {
-        $con1 = $conn->prepare("UPDATE content SET  content = :content");
-        $con1->bindParam(":content", $content);
-        $con1->execute();
 
-        if ($con1) {
-            echo "<script>
-            $(document).ready(function() {
-                Swal.fire({
-                    text: 'Edit Success',
-                    icon: 'success',
-                    timer: 10000,
-                    showConfirmButton: false
-                });
-            })
-            </script>";
-            echo "<meta http-equiv='refresh' content='2;url=index'>";
-        } else {
-            echo "<script>
-            $(document).ready(function() {
-                Swal.fire({
-                    text: 'Something Went Wrong',
-                    icon: 'error',
-                    timer: 10000,
-                    showConfirmButton: false
-                });
-            })
-            </script>";
-            echo "<meta http-equiv='refresh' content='2;url=index'>";
-        }
-    }
-}
-
-// if (isset($_POST['del-img'])) {
-//     $img_id = $_POST['del-img'];
-//     $delete_img = $conn->prepare("DELETE FROM content WHERE id = :id");
-//     $delete_img->bindParam(":id", $img_id);
-//     $delete_img->execute();
-
-//     if ($delete_img) {
-//         echo "<meta http-equiv='refresh' content='0;url=index?id=$id'>";
-//     }
-
-
-
-// }
 
 ?>
 
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -126,6 +79,8 @@ if (isset($_POST['save'])) {
     <!-- <link rel="shortcut icon" href="assets/images/logo/favicon.svg" type="image/x-icon"> -->
     <link rel="shortcut icon" href="../images/logo.svg" type="image/png">
     <link rel="stylesheet" href="assets/css/shared/iconly.css">
+    <script src="tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
 
 </head>
@@ -156,14 +111,12 @@ if (isset($_POST['save'])) {
                             </div>
                             <div class="row align-items-center">
 
-                                <div class="col-lg-6 d-flex justify-content-center align-item-center">
-                                    <img class=" img-fluid mb-4" src="upload/upload_content/<?php echo $row_content['img']; ?>">
-                                </div>
-                                <div class="col-lg-6">
+                                
+                                <div class="col-lg-mb-12">
                                     <?php echo $row_content['content']; ?>
                                 </div>
                                 <div class="modal fade" id="content" data-bs-backdrop="static" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg  modal-dialog-centered">
+                                    <div class="modal-dialog modal-xl  modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Content</h1>
@@ -175,26 +128,61 @@ if (isset($_POST['save'])) {
                                                     <div class="content-text">
                                                         <textarea name="content"><?php echo $row_content['content'] ?></textarea>
                                                         <script>
+                                                            const image_upload_handler_callback = (blobInfo, progress) => new Promise((resolve, reject) => {
+                                                                const xhr = new XMLHttpRequest();
+                                                                xhr.withCredentials = false;
+                                                                xhr.open('POST', 'upload.php');
+
+                                                                xhr.upload.onprogress = (e) => {
+                                                                    progress(e.loaded / e.total * 100);
+                                                                };
+
+                                                                xhr.onload = () => {
+                                                                    if (xhr.status === 403) {
+                                                                        reject({
+                                                                            message: 'HTTP Error: ' + xhr.status,
+                                                                            remove: true
+                                                                        });
+                                                                        return;
+                                                                    }
+
+                                                                    if (xhr.status < 200 || xhr.status >= 300) {
+                                                                        reject('HTTP Error: ' + xhr.status);
+                                                                        return;
+                                                                    }
+
+                                                                    const json = JSON.parse(xhr.responseText);
+
+                                                                    if (!json || typeof json.location != 'string') {
+                                                                        reject('Invalid JSON: ' + xhr.responseText);
+                                                                        return;
+                                                                    }
+
+                                                                    resolve(json.location);
+                                                                };
+
+                                                                xhr.onerror = () => {
+                                                                    reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+                                                                };
+
+                                                                const formData = new FormData();
+                                                                formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+                                                                xhr.send(formData);
+                                                            });
+
                                                             tinymce.init({
                                                                 selector: 'textarea',
-                                                                height: "400",
-                                                                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                                                                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                                                                tinycomments_mode: 'embedded',
-                                                                tinycomments_author: 'Author name',
-                                                                mergetags_list: [{
-                                                                        value: 'First.Name',
-                                                                        title: 'First Name'
-                                                                    },
-                                                                    {
-                                                                        value: 'Email',
-                                                                        title: 'Email'
-                                                                    },
-                                                                ]
+                                                                // height: 500,
+                                                                plugins: 'autolink  code  image  lists table   wordcount',
+                                                                toolbar: ' blocks fontfamily fontsize code | bold italic underline strikethrough |  image table  mergetags | addcomment showcomments  | align lineheight | checklist numlist bullist indent outdent | removeformat',
+                                                                images_upload_url: 'upload.php',
+                                                                branding:false,
+                                                                images_upload_handler: image_upload_handler_callback
                                                             });
                                                         </script>
                                                     </div>
-                                                    <span>Photo</span>
+                                                    <!-- <span>Photo</span>
                                                     <div class="content d-flex justify-content-center align-item-center">
                                                         <div class="title-img">
                                                             <span id="upload-img">รูปภาพ</span>
@@ -210,7 +198,7 @@ if (isset($_POST['save'])) {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
 
                                                     <div class="d-flex justify-content-center-align-item-center">
                                                         <button type="submit" name="save" class="btn btn-save">Save</button>

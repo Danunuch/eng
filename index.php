@@ -39,6 +39,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
 
   <link href="css/spinner.css" rel="stylesheet">
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/detail.css?v=<?php echo time(); ?>" rel="stylesheet">
 
 
   <script src="js/core.min.js"></script>
@@ -79,7 +80,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
 
   <main>
 
-    <?php  include("slide.php"); ?>
+    <?php include("slide.php"); ?>
 
 
 
@@ -94,10 +95,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
 
 
           <div class="row align-items-center">
-            <div class="col-lg-6">
-              <img class=" img-fluid mb-4" src="webpanelcw/upload/upload_content/<?php echo $row_content['img'] ?>">
-            </div>
-            <div class="col-lg-6">
+            <div class="col-lg-12">
               <?php echo $row_content['content'] ?>
 
             </div>
@@ -148,12 +146,12 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
               <div class="item-detail">
                 <div class="img-detail">
 
-                  <img class="img-fluid img-detail-img" src="webpanelcw/upload/upload_description/<?= $row_description[$i]['img'] ?>">
+                  <img class="img-fluid img-detail-img" src="webpanelcw/upload/upload_description/<?= $row_description[$i]['img'] ?>" >
 
 
 
                   <div class="icon-detail">
-                    <img class="img-fluid" data-lazy="upload/icon-detail0<?= $i+1 ?>.png">
+                    <img class="img-fluid" data-lazy="upload/icon-detail0<?= $i + 1 ?>.png">
                   </div>
 
 
@@ -180,7 +178,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
           <a href="tel:021024083" class="box-tel">
             <span class="material-icons-sharp text-danger">
               phone_in_talk
-            </span> : <?php echo $row_about['tel']?>
+            </span> : <?php echo $row_about['tel'] ?>
           </a>
         </div>
 
@@ -199,7 +197,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
 
     <section id="service-section" class="bg-parallax" style="background:url(images/service-section.jpg) no-repeat top center; background-size:cover;">
       <div class="container">
-        <img class="img-fluid" src="webpanelcw/upload/upload_service/<?php echo $row_service['img'];?>">
+        <img class="img-fluid" src="webpanelcw/upload/upload_service/<?php echo $row_service['img']; ?>">
 
 
         <div class="row">
@@ -220,7 +218,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
 
 
               <div class="text-service">
-                <?php echo $row_service['content1']?>
+                <?php echo $row_service['content1'] ?>
 
 
                 <a href="" class="btn-service">
@@ -250,7 +248,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
 
 
               <div class="text-service">
-              <?php echo $row_service['content2']?>
+                <?php echo $row_service['content2'] ?>
 
 
                 <a href="tel:0998887777" class="btn-service">
@@ -258,7 +256,7 @@ $row_service = $service->fetch(PDO::FETCH_ASSOC);
                     call
                   </span>
 
-                  โทรเลย <?php echo $row_about['tel']?></a>
+                  โทรเลย <?php echo $row_about['tel'] ?></a>
               </div>
             </div>
           </div>

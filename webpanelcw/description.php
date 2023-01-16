@@ -16,6 +16,7 @@ $row_description = $description->fetchAll();
 if (isset($_POST['save'])) {
     $title = $_POST['title'];
     $img = $_FILES['img'];
+    $des_id = $_POST['des_id'];
 
     $allow = array('jpg', 'jpeg', 'png', 'webp');
     $extention1 = explode(".", $img['name']); //เเยกชื่อกับนามสกุลไฟล์
@@ -26,9 +27,10 @@ if (isset($_POST['save'])) {
     if (in_array($fileActExt1, $allow)) {
         if ($img['size'] > 0 && $img['error'] == 0) {
             if (move_uploaded_file($img['tmp_name'], $filePath1)) {
-                $description = $conn->prepare("UPDATE description SET title = :title , img = :img");
+                $description = $conn->prepare("UPDATE description SET title = :title , img = :img WHERE id=:id");
                 $description->bindParam(":title", $title);
                 $description->bindParam(":img", $fileNew1);
+                $description->bindParam(":id", $des_id);
 
                 $description->execute();
 
@@ -60,8 +62,9 @@ if (isset($_POST['save'])) {
             }
         }
     } else {
-        $description = $conn->prepare("UPDATE description SET title = :title");
+        $description = $conn->prepare("UPDATE description SET title = :title WHERE id=:id");
         $description->bindParam(":title", $title);
+        $description->bindParam(":id", $des_id);
         $description->execute();
 
         if ($description) {
@@ -136,62 +139,63 @@ if (isset($_POST['save'])) {
                                         <th scope="col">Manage</th>
                                     </tr>
                                 </thead>
-                                <?php  foreach ($row_description as $row_description ) {?>
+                                <?php foreach ($row_description as $row_description) { ?>
 
-<tbody>
-                                    <tr>
-                                        <td align="center"> <img src="upload/upload_description/<?php echo $row_description['img'] ?>" alt="" width="50%"></td>
-                                        <td align="center"><?php echo $row_description['title'] ?></td>
-                                        <td align="center"><a type="input" data-bs-toggle="modal" class="btn btn-edit " href="#about_us"><i class="bi bi-pencil-square"></i></a></td>
-                                    </tr>
-                                </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <td align="center"> <img src="upload/upload_description/<?php echo $row_description['img'] ?>" alt="" width="50%"></td>
+                                            <td align="center"><?php echo $row_description['title'] ?></td>
+                                            <td align="center"><a type="input" data-bs-toggle="modal" class="btn btn-edit" href="#about_us<?php echo $row_description['id'] ?>"><i class="bi bi-pencil-square"></i></a></td>
+                                        </tr>
+                                    </tbody>
+                                    <div class="modal fade" id="about_us<?php echo $row_description['id'] ?>" data-bs-backdrop="static" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg  modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Description</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="post" enctype="multipart/form-data">
+                                                        <span>Title</span>
+                                                        <input type="hidden" name="des_id" value="<?php echo $row_description['id'] ?>">
+                                                        <input type="text" class="form-control mb-2" name="title" value="<?php echo $row_description['title'] ?>"><br>
 
-                                  <?php   }?> 
+                                                        <div class="content d-flex justify-content-center align-item-center">
+                                                            <div class="title-img">
+                                                                <span id="upload-img">Photo</span>
+                                                                <div class="group-pos">
+                                                                    <input type="file" name="img" id="imgInput-cover" class="form-control">
+                                                                    <button type="button" class="btn reset" id="reset1">ยกเลิก</button>
+                                                                </div>
+                                                                <span class="file-support">Only file support ('jpg', 'jpeg', 'png','webp').</span>
+                                                                <div id="gallery-cover">
+                                                                    <div class='box-edit-img-cover'>
+                                                                        <span class='del-edit-img'></span>
+                                                                        <img class='edit-img-cover' id='previewImg-cover' src='upload/upload_description/<?php echo $row_description['img'] ?>'>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
-                                
-
-                                
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade" id="about_us" data-bs-backdrop="static" aria-hidden="true">
-                    <div class="modal-dialog modal-lg  modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Description</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" enctype="multipart/form-data">
-                                    <span>Title</span>
-                                    <input type="text" class="form-control mb-2" name="title" value="<?php echo $row_description['title'] ?>"><br>
-
-                                    <div class="content d-flex justify-content-center align-item-center">
-                                        <div class="title-img">
-                                            <span id="upload-img">Photo</span>
-                                            <div class="group-pos">
-                                                <input type="file" name="img" id="imgInput-cover" class="form-control">
-                                                <button type="button" class="btn reset" id="reset1">ยกเลิก</button>
-                                            </div>
-                                            <span class="file-support">Only file support ('jpg', 'jpeg', 'png','webp').</span>
-                                            <div id="gallery-cover">
-                                                <div class='box-edit-img-cover'>
-                                                    <span class='del-edit-img'></span>
-                                                    <img class='edit-img-cover' id='previewImg-cover' src='upload/upload_description/<?php echo $row_description['img'] ?>'>
+                                                        <div class="d-flex justify-content-center-align-item-center">
+                                                            <button type="submit" name="save" class="btn btn-save">Save</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                <?php   } ?>
 
-                                    <div class="d-flex justify-content-center-align-item-center">
-                                        <button type="submit" name="save" class="btn btn-save">Save</button>
-                                    </div>
-                                </form>
-                            </div>
+
+
+
+                            </table>
                         </div>
                     </div>
                 </div>
+
             </section>
             <?php include('footer.php'); ?>
         </div>
